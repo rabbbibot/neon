@@ -5,6 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LED 전광판</title>
   <style>
+    @font-face {
+      font-family: 'Mulmaru';
+      src: url('fonts/Mulmaru.woff2') format('woff2'),
+           url('fonts/Mulmaru.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'CookieRun';
+      src: url('fonts/cookie/CookieRun Regular.otf') format('opentype'),
+           url('fonts/cookie/CookieRun Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'DungGeunMo';
+      src: url('fonts/dunggeunmo/DungGeunMo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'JeonjuWanpanbonGak';
+      src: url('fonts/jeonju/JeonjuWanpanbonGak-R.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'JeonjuWanpanbonGak';
+      src: url('fonts/jeonju/JeonjuWanpanbonGak-L.ttf') format('truetype');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'MonaS12TextKR';
+      src: url('fonts/monas/MonaS12TextKR.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'OnGeulipNukka';
+      src: url('fonts/nukka/온글잎 누카.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'OmyuPretty';
+      src: url('fonts/omyu/OmyuPretty.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'SingleDay';
+      src: url('fonts/singleday/SingleDay-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       --bg: #0a0a0a;
       --surface: #171717;
@@ -486,12 +560,14 @@
       gap: 1.1rem;
       align-items: center;
       flex-wrap: wrap;
+      padding-left: 0.1rem;
     }
 
     .picker-field {
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      min-height: 32px;
     }
 
     .picker-field span {
@@ -500,11 +576,12 @@
     }
 
     .picker-field input[type="color"] {
-      width: 84px;
-      height: 44px;
+      width: 116px;
+      height: 30px;
+      flex: 0 0 116px;
       padding: 0;
       border: none;
-      border-radius: 10px;
+      border-radius: 7px;
       background: #0a0a0a;
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 2px 6px rgba(0, 0, 0, 0.4);
       cursor: pointer;
@@ -515,17 +592,17 @@
 
     .picker-field input[type="color"]::-webkit-color-swatch-wrapper {
       padding: 0;
-      border-radius: 10px;
+      border-radius: 7px;
     }
 
     .picker-field input[type="color"]::-webkit-color-swatch {
       border: none;
-      border-radius: 10px;
+      border-radius: 7px;
     }
 
     .picker-field input[type="color"]::-moz-color-swatch {
       border: none;
-      border-radius: 10px;
+      border-radius: 7px;
     }
 
     input[type="color"] {
@@ -654,7 +731,14 @@
             <div class="field">
               <label for="font_select">폰트</label>
               <select id="font_select">
-                <option value="">폰트 불러오는 중...</option>
+                <option value="mulmaru" style="font-family: 'Mulmaru';">기본 (물마루)</option>
+                <option value="cookierun" style="font-family: 'CookieRun';">쿠키런</option>
+                <option value="dunggeunmo" style="font-family: 'DungGeunMo';">둥근모꼴 (도트)</option>
+                <option value="jeonju" style="font-family: 'JeonjuWanpanbonGak';">전주완판본</option>
+                <option value="monas" style="font-family: 'MonaS12TextKR';">모나스</option>
+                <option value="nukka" style="font-family: 'OnGeulipNukka';">온글잎 누카</option>
+                <option value="omyu" style="font-family: 'OmyuPretty';">오뮤 프리티</option>
+                <option value="singleday" style="font-family: 'SingleDay';">싱글데이</option>
               </select>
             </div>
           </div>
@@ -678,7 +762,7 @@
     </main>
   </div>
   <script>
-    (async function () {
+    (function () {
       var STORAGE_KEY = "bangsong_signboard_v2";
       var CHROMA_STORAGE_KEY = "bangsong_roulette_chroma_v1";
       var RAINBOW_COLORS = [
@@ -686,25 +770,32 @@
         "#4488ff", "#4466ff", "#aa44ff", "#ff44cc"
       ];
 
-      // fonts/ 폴더 안에 새 폰트 폴더(안에 ttf/otf/woff/woff2 파일 포함)를 추가하면
-      // discoverFonts()가 자동으로 찾아서 목록에 등록합니다.
-      // (파일 서버 없이 index.html을 그냥 더블클릭해서 여는 경우 브라우저가 폴더 목록
-      // 조회를 막을 수 있어, 그런 경우엔 아래 FALLBACK_FONTS로 대체됩니다.)
-      var FONT_ROOT = "fonts/";
-      var FONT_EXT_PRIORITY = ["woff2", "otf", "ttf", "woff"];
-      var FALLBACK_FONTS = [
-        { id: "물마루", label: "물마루 (기본)", file: "물마루/Mulmaru.ttf" },
-        { id: "cookie", label: "쿠키런", file: "cookie/CookieRun Regular.ttf" },
-        { id: "dunggeunmo", label: "둥근모꼴 (도트)", file: "dunggeunmo/DungGeunMo.ttf" },
-        { id: "jeonju", label: "전주완판본", file: "jeonju/JeonjuWanpanbonGak-R.ttf" },
-        { id: "monas", label: "모나스", file: "monas/MonaS12TextKR.ttf" },
-        { id: "nukka", label: "온글잎 누카", file: "nukka/온글잎 누카.ttf" },
-        { id: "omyu", label: "오뮤 프리티", file: "omyu/OmyuPretty.ttf" },
-        { id: "singleday", label: "싱글데이", file: "singleday/SingleDay-Regular.ttf" }
-      ];
+      var FONT_FAMILIES = {
+        mulmaru: "'Mulmaru'",
+        cookierun: "'CookieRun'",
+        dunggeunmo: "'DungGeunMo'",
+        jeonju: "'JeonjuWanpanbonGak'",
+        monas: "'MonaS12TextKR'",
+        nukka: "'OnGeulipNukka'",
+        omyu: "'OmyuPretty'",
+        singleday: "'SingleDay'"
+      };
 
-      var FONT_FAMILIES = {};
-      var FONT_LIST = [];
+      // GitHub의 fonts 폴더를 자동으로 읽어 새 폰트를 추가합니다.
+      // fonts 안에 새 폴더를 넣고 폰트 파일만 올리면 새로고침 후 선택창에 표시됩니다.
+      var GITHUB_FONT_REPO = "rabbbibot/neon";
+      var GITHUB_FONT_BRANCH = "main";
+      // 폴더 이름이 한글이거나 영문이어도 같은 폰트로 인식합니다.
+      var FONT_FOLDER_ALIASES = {
+        mulmaru: ["mulmaru", "물마루"],
+        cookie: ["cookie", "cookierun"],
+        dunggeunmo: ["dunggeunmo"],
+        jeonju: ["jeonju"],
+        monas: ["monas"],
+        nukka: ["nukka"],
+        omyu: ["omyu"],
+        singleday: ["singleday"]
+      };
 
       var BORDER_STYLES = ["none", "solid", "dashed"];
 
@@ -722,13 +813,10 @@
         height: 130,
         blink: false,
         wavy: false,
-        font: "",
+        font: "mulmaru",
         border: { style: "none", color: "#00eaff" },
         boards: [defaultBoard()]
       };
-
-      await discoverFonts();
-      defaults.font = FONT_LIST.length ? FONT_LIST[0].id : "";
 
       var state = loadState();
       applyUrlParams();
@@ -764,6 +852,96 @@
 
       bindUI();
       renderAll();
+      loadFontsFromGithub();
+
+      function loadFontsFromGithub() {
+        var apiUrl = "https://api.github.com/repos/" + GITHUB_FONT_REPO + "/git/trees/" + GITHUB_FONT_BRANCH + "?recursive=1";
+        fetch(apiUrl, { headers: { Accept: "application/vnd.github+json" } })
+          .then(function (response) {
+            if (!response.ok) throw new Error("GitHub 폰트 목록을 불러오지 못했습니다.");
+            return response.json();
+          })
+          .then(function (data) {
+            var files = (data.tree || []).filter(function (item) {
+              return item.type === "blob" && /^fonts\/.+\.(woff2?|ttf|otf)$/i.test(item.path);
+            });
+
+            var groups = {};
+            files.forEach(function (file) {
+              var parts = file.path.split("/");
+              var folder = parts.length > 2 ? parts[1] : parts[parts.length - 1].replace(/\.[^.]+$/, "");
+              var folderKey = folder.toLowerCase().replace(/[^a-z0-9가-힣]+/g, "");
+              var builtInKey = getBuiltInFontKey(folderKey);
+              var groupKey = builtInKey || folderKey;
+              if (!groupKey) return;
+              if (!groups[groupKey]) groups[groupKey] = { name: folder, files: [], builtInKey: builtInKey };
+              groups[groupKey].files.push(file);
+            });
+
+            return Promise.all(Object.keys(groups).map(function (groupKey) {
+              var group = groups[groupKey];
+              var key = group.builtInKey || ("custom_" + groupKey);
+              var family = group.builtInKey ? FONT_FAMILIES[group.builtInKey].replace(/'/g, "") : "CustomFont_" + groupKey;
+              var loads = group.files.map(function (file) {
+                var rawUrl = "https://raw.githubusercontent.com/" + GITHUB_FONT_REPO + "/" + GITHUB_FONT_BRANCH + "/" + file.path.split("/").map(encodeURIComponent).join("/");
+                var weight = getFontWeight(file.path);
+                var style = /italic|oblique/i.test(file.path) ? "italic" : "normal";
+                var font = new FontFace(family, "url(\"" + rawUrl + "\")", { weight: String(weight), style: style });
+                return font.load().then(function (loaded) {
+                  document.fonts.add(loaded);
+                  return loaded;
+                }).catch(function () { return null; });
+              });
+              return Promise.all(loads).then(function () {
+                if (!document.fonts.check("16px '" + family + "'")) return;
+                if (group.builtInKey) {
+                  applyFont();
+                } else {
+                  addFontOption(key, family, group.name);
+                }
+              });
+            }));
+          })
+          .catch(function () {
+            // GitHub API가 잠시 제한되거나 오프라인이어도 기본 폰트는 그대로 작동합니다.
+          });
+      }
+
+      function getBuiltInFontKey(folderKey) {
+        var keys = Object.keys(FONT_FOLDER_ALIASES);
+        for (var i = 0; i < keys.length; i++) {
+          var aliases = FONT_FOLDER_ALIASES[keys[i]];
+          if (aliases.indexOf(folderKey) > -1) return keys[i];
+        }
+        return null;
+      }
+
+      function getFontWeight(path) {
+        var name = path.toLowerCase();
+        if (/thin|hairline/.test(name)) return 100;
+        if (/extra.?light|ultra.?light/.test(name)) return 200;
+        if (/light/.test(name)) return 300;
+        if (/medium/.test(name)) return 500;
+        if (/semi.?bold|demi.?bold/.test(name)) return 600;
+        if (/extra.?bold|ultra.?bold/.test(name)) return 800;
+        if (/bold|black|heavy/.test(name)) return 700;
+        return 400;
+      }
+
+      function addFontOption(key, family, label) {
+        if (FONT_FAMILIES[key]) return;
+        FONT_FAMILIES[key] = "'" + family.replace(/'/g, "") + "'";
+        var option = document.createElement("option");
+        option.value = key;
+        option.textContent = label;
+        option.style.fontFamily = FONT_FAMILIES[key];
+        option.dataset.autoFont = "true";
+        els.fontSelect.appendChild(option);
+        if (state.font === key) {
+          els.fontSelect.value = key;
+          applyFont();
+        }
+      }
 
       function loadState() {
         try {
@@ -809,7 +987,7 @@
           height: clampNum(+s.height, 60, 400) || defaults.height,
           blink: !!s.blink,
           wavy: !!s.wavy,
-          font: FONT_FAMILIES[s.font] ? s.font : defaults.font,
+          font: FONT_FAMILIES[s.font] || /^custom_/.test(String(s.font)) ? String(s.font) : defaults.font,
           border: {
             style: BORDER_STYLES.indexOf(border.style) > -1 ? border.style : defaults.border.style,
             color: border.color || defaults.border.color
@@ -1012,7 +1190,6 @@
         els.speedRange.value = state.speed;
         els.widthInput.value = state.width;
         els.heightInput.value = state.height;
-        renderFontOptions();
         els.fontSelect.value = state.font;
         els.borderStyleSelect.value = state.border.style;
         els.borderColorInput.value = state.border.color;
@@ -1132,90 +1309,9 @@
       }
 
       function applyFont() {
-        var fallback = FONT_LIST.length ? FONT_FAMILIES[FONT_LIST[0].id] : "inherit";
-        var fam = FONT_FAMILIES[state.font] || fallback;
+        var fam = FONT_FAMILIES[state.font] || FONT_FAMILIES.mulmaru;
         document.documentElement.style.setProperty("--font-family", fam);
         els.fontSelect.style.fontFamily = fam;
-      }
-
-      function renderFontOptions() {
-        els.fontSelect.innerHTML = "";
-        if (!FONT_LIST.length) {
-          var empty = document.createElement("option");
-          empty.value = "";
-          empty.textContent = "사용 가능한 폰트 없음";
-          els.fontSelect.appendChild(empty);
-          return;
-        }
-        FONT_LIST.forEach(function (f) {
-          var opt = document.createElement("option");
-          opt.value = f.id;
-          opt.textContent = f.label;
-          opt.style.fontFamily = FONT_FAMILIES[f.id];
-          els.fontSelect.appendChild(opt);
-        });
-      }
-
-      function registerFontFace(id, label, url) {
-        if (FONT_FAMILIES[id]) return;
-        var family = label.replace(/["\\]/g, "");
-        try {
-          var face = new FontFace(family, "url('" + url + "')");
-          document.fonts.add(face);
-          face.load().catch(function () { /* ignore load errors, fallback stack still applies */ });
-        } catch (e) { /* ignore, still register the family name so UI works */ }
-        FONT_FAMILIES[id] = '"' + family + '"';
-        FONT_LIST.push({ id: id, label: label });
-      }
-
-      function scanDirListing(url) {
-        return fetch(url).then(function (res) {
-          if (!res.ok) return null;
-          return res.text();
-        }).then(function (text) {
-          if (!text) return null;
-          var doc = new DOMParser().parseFromString(text, "text/html");
-          var anchors = Array.prototype.slice.call(doc.querySelectorAll("a"));
-          return anchors.map(function (a) { return a.getAttribute("href"); }).filter(Boolean);
-        }).catch(function () { return null; });
-      }
-
-      function pickBestFontFile(hrefs) {
-        var files = hrefs.filter(function (h) { return /\.(ttf|otf|woff2?|TTF|OTF|WOFF2?)$/.test(h); });
-        if (!files.length) return null;
-        for (var i = 0; i < FONT_EXT_PRIORITY.length; i++) {
-          var ext = FONT_EXT_PRIORITY[i];
-          var match = files.filter(function (f) { return f.toLowerCase().indexOf("." + ext) === f.length - (ext.length + 1); })[0];
-          if (match) return match;
-        }
-        return files[0];
-      }
-
-      async function discoverFonts() {
-        try {
-          var topLinks = await scanDirListing(FONT_ROOT);
-          if (topLinks) {
-            var folders = topLinks.filter(function (h) {
-              return h && h.indexOf("..") === -1 && h.indexOf("/") !== 0 && h.charAt(h.length - 1) === "/";
-            });
-            for (var i = 0; i < folders.length; i++) {
-              var folder = folders[i];
-              var subLinks = await scanDirListing(FONT_ROOT + folder);
-              if (!subLinks) continue;
-              var fontFile = pickBestFontFile(subLinks);
-              if (!fontFile) continue;
-              var id = decodeURIComponent(folder.replace(/\/$/, ""));
-              var label = id;
-              registerFontFace(id, label, FONT_ROOT + folder + fontFile);
-            }
-          }
-        } catch (e) { /* directory listing unavailable, fall through to fallback below */ }
-
-        if (!FONT_LIST.length) {
-          FALLBACK_FONTS.forEach(function (f) {
-            registerFontFace(f.id, f.label, FONT_ROOT + f.file);
-          });
-        }
       }
 
       function applyBorder() {
